@@ -28,44 +28,39 @@ export default function App() {
 }
 
 function Accordion({data}) {
+  const [curOpen, setCurOpen] = useState(null)
+  
+  function handleOpenItem(itemIndex) {
+    setCurOpen(itemIndex === curOpen ? null : itemIndex )
+  }
+
   return (
     <div className="accordion">
       {data.map((faq, index) => (
-        <Item item={faq} index={index} key={index}/>
+        <Item item={faq} index={index} key={index} curOpen={curOpen} onOpenItem={handleOpenItem} />
       ))}
     </div>
   )
 }
 
-function Item({ item, index }) {
-  const [open, setOpen] = useState(false)
+function Item({ item, index, curOpen, onOpenItem }) {
+  const paddedIndex = String(index + 1).padStart(2, '0')
+  const isOpen = curOpen === index
 
-  const paddedIndex = String(index+1).padStart(2, '0')
-
-
-  if (open) {
-    return (
-      <>
-        <div className={`item ${open && 'open'}`} onClick={() => setOpen(!open)}>
-          <span className="number">
-            { paddedIndex }
-          </span>
-          <span className="title">{item.title}</span>
-          <span className="icon"> - </span>
+  return (
+    <>
+      <div className={`item ${isOpen && 'open'}`} onClick={() => onOpenItem(index)}>
+        <span className="number">
+          { paddedIndex }
+        </span>
+        <span className="title">{item.title}</span>
+        <span className="icon"> { isOpen ? '-' : '+' } </span>
+        {isOpen &&
           <div className="content-box">
             <ul>{ item.text }</ul>
           </div>
-        </div>
-      </>
-    )
-  } else {
-    return (
-    <div className="item" onClick={() => setOpen(!open)}>
-      <span className="number">
-        { paddedIndex }
-      </span>
-      <span className="title">{item.title}</span>
-      <span className="icon"> + </span>
-    </div>
-  )}
+        }
+      </div>
+    </>
+  )
 }
